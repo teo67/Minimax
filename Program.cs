@@ -1,2 +1,2 @@
-﻿Minimax Minimax = new Minimax(new TicTacToe());
-Minimax.Play();
+﻿Minimax Minimax = new Minimax(new DotsAndBoxes(2, 2));
+Minimax.Play(true);
