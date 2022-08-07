@@ -1,50 +1,96 @@
 class TicTacToe : IGame {
-    private int[] Board { get; }
-    public TicTacToe() {
-        Board = new int[9];
+    private int[][] Board { get; }
+    public TicTacToe(int width = 3, int height = 3) {
+        Board = new int[height][];
+        for(int i = 0; i < height; i++) {
+            Board[i] = new int[width];
+        }
+    }
+    private void SetCheck(int?[] arr, int index, int i, int j) {
+        if(index < 0 || index >= arr.Length) {
+            return;
+        }
+        if(arr[index] == null) {
+            arr[index] = Board[i][j];
+        } else if(arr[index] != Board[i][j]) {
+            arr[index] = 0;
+        }
     }
     public int? CheckWin() {
-        for(int i = 0; i < 3; i++) {
-            if(Board[i] == Board[i + 3] && Board[i] == Board[i + 6] && Board[i] != 0) {
-                return Board[i];
-            }
-            if(Board[i * 3] == Board[i * 3 + 1] && Board[i * 3] == Board[i * 3 + 2] && Board[i * 3] != 0) {
-                return Board[i * 3];
-            }
-        }
-        if(Board[0] == Board[4] && Board[0] == Board[8] && Board[0] != 0) {
-            return Board[0];
-        }
-        if(Board[2] == Board[4] && Board[2] == Board[6] && Board[2] != 0) {
-            return Board[2];
-        }
-        if(Board.Contains(0)) {
-            return null;
-        }
-        return 0;
-    }
-    public void EveryMove(int player, Func<bool> run) {
-        int latest = -1;
-        for(int i = 0; i < 9; i++) {
-            if(Board[i] == 0) {
-                Board[i] = player;
-                if(run()) {
-                    latest = i;
+        // null: not yet evaluated, 0: no winstate
+        int?[] cols = new int?[Board[0].Length];
+        bool full = true;
+        int diagonalLength = Math.Min(Board.Length, Board[0].Length);
+        int?[] xforwardDiagonals = new int?[Board[0].Length - diagonalLength + 1];
+        int?[] yforwardDiagonals = new int?[Board.Length - diagonalLength + 1];
+        int?[] xbackwardDiagonals = new int?[Board[0].Length - diagonalLength + 1];
+        int?[] ybackwardDiagonals = new int?[Board.Length - diagonalLength + 1];
+        for(int i = 0; i < Board.Length; i++) {
+            int? row = null;
+            for(int j = 0; j < Board[i].Length; j++) {
+                if(Board[i][j] == 0) {
+                    full = false;
                 }
-                Board[i] = 0;
+                if(row == null) {
+                    row = Board[i][j];
+                } else if(row != Board[i][j]) {
+                    row = 0;
+                }
+                SetCheck(cols, j, i, j);
+                SetCheck(xforwardDiagonals, j - i, i, j);
+                SetCheck(yforwardDiagonals, i - j, i, j);
+                SetCheck(xbackwardDiagonals, i + j - diagonalLength + 1, i, j);
+                SetCheck(ybackwardDiagonals, i + j - diagonalLength + 1, i, j);
+            }
+            if(row != 0 && row != null) {
+                return row;
             }
         }
-        if(latest != -1) {
-            Board[latest] = player;
+        for(int i = 0; i < Board.Length; i++) {
+            if(cols[i] != 0 && cols[i] != null) {
+                return cols[i];
+            }
+        }
+        for(int i = 0; i < Board[0].Length - diagonalLength + 1; i++) {
+            if(xforwardDiagonals[i] != 0 && xforwardDiagonals[i] != null) {
+                return xforwardDiagonals[i];
+            }
+            if(xbackwardDiagonals[i] != 0 && xbackwardDiagonals[i] != null) {
+                return xbackwardDiagonals[i];
+            }
+        }
+        for(int i = 0; i < Board.Length - diagonalLength + 1; i++) {
+            if(yforwardDiagonals[i] != 0 && yforwardDiagonals[i] != null) {
+                return yforwardDiagonals[i];
+            }
+            if(ybackwardDiagonals[i] != 0 && ybackwardDiagonals[i] != null) {
+                return ybackwardDiagonals[i];
+            }
+        }
+        return full ? 0 : null;
+    }
+    public void EveryMove(int player, Action<Action> run) {
+        for(int i = 0; i < Board.Length; i++) {
+            for(int j = 0; j < Board[i].Length; j++) {
+                if(Board[i][j] == 0) {
+                    Board[i][j] = player;
+                    int savedI = i;
+                    int savedJ = j;
+                    run(() => {
+                        Board[savedI][savedJ] = player;
+                    });
+                    Board[i][j] = 0;
+                }
+            }
         }
     }
     public string Print() {
         string returning = "";
-        for(int i = 0; i < 9; i++) {
-            if(i % 3 == 0) {
-                returning += "\n";
+        for(int i = 0; i < Board.Length; i++) {
+            for(int j = 0; j < Board[i].Length; j++) {
+                returning += new string[] { "O", "_", "X" }[Board[i][j] + 1] + "  ";
             }
-            returning += new string[] { "O", "_", "X" }[Board[i] + 1];
+            returning += "\n";
         }
         return returning;
     }
@@ -69,19 +115,19 @@ class TicTacToe : IGame {
         }
         return r;
     }
-    private int GetRowCol() {
+    private (int, int) GetRowCol() {
         Console.Write("Enter your row number (0-2): ");
         int row = GetInt();
         Console.Write("Enter your column number (0-2): ");
         int col = GetInt();
-        return row * 3 + col;
+        return (row, col);
     }
     public void GetPlayerTurn() {
-        int res = GetRowCol();
-        while(Board[res] != 0) {
+        (int, int) res = GetRowCol();
+        while(Board[res.Item1][res.Item2] != 0) {
             Console.WriteLine("That space is already taken, try again!");
             res = GetRowCol();
         }
-        Board[res] = -1;
+        Board[res.Item1][res.Item2] = -1;
     }
 }

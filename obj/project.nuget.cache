@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9mDgQ7oZaaWt1+JQwGxmAAoxXaC70iTYhX1p4Ek1tHVZ4U9EqYiciQOqk/Q9a2Dl/0G3KQOj7tbR+mVbx+UJmg==",
+  "dgSpecHash": "UOneS7R4ws+IEiElFWt+HwL8f11QDnodc7LWkAniZFcfKPy1auNNpbFpPYfFVnOOXIOJweVY6YslFEyEZD+Rdw==",
   "success": true,
-  "projectFilePath": "/Users/cullijn/Desktop/Code/minimax/minimax.csproj",
+  "projectFilePath": "C:\\Users\\006co\\Desktop\\Code\\Minimax\\minimax.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
