@@ -7,21 +7,21 @@ class Minimax {
         this.numOps = 0;
         this.Before = Console.ForegroundColor;
     }
-    private (int, Action?) Run(int debugLayer, int player = 1, int layer = 0) {
-        int? res = Game.CheckWin();
+    private ((int, int), Action?) Run(int debugLayer, int player = 1, int layer = 0) {
+        (int, int)? res = Game.CheckWin();
         if(res != null) {
-            return ((int)res, null);
+            return (res.Value, null);
         }
-        int? best = null;
+        (int, int)? best = null;
         Action? bestMove = null;
         Action? nextAction = null;
         Game.EveryMove(player, (Action move, bool goAgain) => {
             numOps++;
             if(numOps % 1000000 == 0) {
-                PrintOps();
+                //PrintOps();
             }
-            (int, Action?) pass = Run(debugLayer, goAgain ? player : -player, layer + 1);
-            if(best == null || pass.Item1 * player > best * player) {
+            ((int, int), Action?) pass = Run(debugLayer, goAgain ? player : -player, layer + 1);
+            if(best == null || (player == -1 ? pass.Item1.Item1 : pass.Item1.Item2) > (player == -1 ? best.Value.Item1 : best.Value.Item2)) {
                 best = pass.Item1;
                 bestMove = move;
                 nextAction = goAgain ? pass.Item2 : null;
@@ -30,7 +30,7 @@ class Minimax {
                 Console.WriteLine($"Finished operation on layer {layer} - -");
             }
         });
-        return (best == null ? 0 : (int)best, () => {
+        return (best == null ? (0, 0) : best.Value, () => {
             if(bestMove != null) {
                 bestMove();
             }
@@ -54,7 +54,7 @@ class Minimax {
         Console.Write(writing);
         Console.SetCursorPosition(0, Console.CursorTop);
     }
-    private int? AlgoRun(int debugLayer) {
+    private (int, int)? AlgoRun(int debugLayer) {
         numOps = 0;
         Action? action = Run(debugLayer).Item2;
         if(action != null) {
@@ -65,7 +65,8 @@ class Minimax {
         return Game.CheckWin();
     }
     public void Play(bool algoFirst = false, int debugLayer = -1) {
-        int? result = Game.CheckWin();
+        Console.WriteLine(Print());
+        (int, int)? result = Game.CheckWin();
         if(algoFirst) {
             result = AlgoRun(debugLayer);
         }
@@ -79,16 +80,8 @@ class Minimax {
             }
             result = AlgoRun(debugLayer);
         }
-        if(result == -1) {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Player wins!");
-        } else if(result == 0) {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("It's a draw!");
-        } else if(result == 1) {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Algorithm wins!");
-        }
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.WriteLine("Game Over!");
         Console.ForegroundColor = Before;
     }
 }

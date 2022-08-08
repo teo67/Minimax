@@ -12,7 +12,7 @@ class BoardGame : IGame {
         P1Symbol = p1symbol;
         P2Symbol = p2symbol;
     }
-    public virtual int? CheckWin() {
+    public virtual (int, int)? CheckWin() {
         return null;
     }
     public virtual void EveryMove(int player, Action<Action, bool> run) {
@@ -39,6 +39,9 @@ class BoardGame : IGame {
             returning += "\n";
         }
         return returning;
+    }
+    public static (int, int)? Convert(int? input) {
+        return input == -1 ? (1, -1) : (-1, 1);
     }
     public static string GetInput() {
         string? res = Console.ReadLine();

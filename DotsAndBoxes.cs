@@ -32,17 +32,17 @@ class DotsAndBoxes : IGame {
         }
         return true;
     }
-    public int? CheckWin() {
+    public (int, int)? CheckWin() {
         if(!IsOver()) {
             return null;
         }
         if(P1Score > P2Score) {
-            return -1;
+            return (1, -1);
         }
         if(P2Score > P1Score) {
-            return 1;
+            return (-1, 1);
         }
-        return 0;
+        return (0, 0);
     }
     private void UpdateScore(int player, int howMuch = 1) {
         if(player == -1) {

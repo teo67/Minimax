@@ -10,7 +10,7 @@ class TicTacToe : BoardGame {
             arr[index] = 0;
         }
     }
-    public override int? CheckWin() {
+    public override (int, int)? CheckWin() {
         // null: not yet evaluated, 0: no winstate
         int?[] cols = new int?[Board[0].Length];
         bool full = true;
@@ -37,30 +37,30 @@ class TicTacToe : BoardGame {
                 SetCheck(ybackwardDiagonals, i + j - diagonalLength + 1, i, j);
             }
             if(row != 0 && row != null) {
-                return row;
+                return BoardGame.Convert(row);
             }
         }
         for(int i = 0; i < Board[0].Length; i++) {
             if(cols[i] != 0 && cols[i] != null) {
-                return cols[i];
+                return BoardGame.Convert(cols[i]);
             }
         }
         for(int i = 0; i < Board[0].Length - diagonalLength + 1; i++) {
             if(xforwardDiagonals[i] != 0 && xforwardDiagonals[i] != null) {
-                return xforwardDiagonals[i];
+                return BoardGame.Convert(xforwardDiagonals[i]);
             }
             if(xbackwardDiagonals[i] != 0 && xbackwardDiagonals[i] != null) {
-                return xbackwardDiagonals[i];
+                return BoardGame.Convert(xbackwardDiagonals[i]);
             }
         }
         for(int i = 0; i < Board.Length - diagonalLength + 1; i++) {
             if(yforwardDiagonals[i] != 0 && yforwardDiagonals[i] != null) {
-                return yforwardDiagonals[i];
+                return BoardGame.Convert(yforwardDiagonals[i]);
             }
             if(ybackwardDiagonals[i] != 0 && ybackwardDiagonals[i] != null) {
-                return ybackwardDiagonals[i];
+                return BoardGame.Convert(ybackwardDiagonals[i]);
             }
         }
-        return full ? 0 : null;
+        return full ? (0, 0) : null;
     }
 }
