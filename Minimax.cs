@@ -18,7 +18,7 @@ class Minimax {
         Game.EveryMove(player, (Action move, bool goAgain) => {
             numOps++;
             if(numOps % 1000000 == 0) {
-                //PrintOps();
+                PrintOps();
             }
             ((int, int), Action?) pass = Run(debugLayer, goAgain ? player : -player, layer + 1);
             if(best == null || (player == -1 ? pass.Item1.Item1 : pass.Item1.Item2) > (player == -1 ? best.Value.Item1 : best.Value.Item2)) {
